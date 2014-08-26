@@ -24,7 +24,13 @@ int main(int argc, char **argv)
     const char *infile = argv[1];
     const char *outfile = argv[2];
 
-    HexData hexdata(infile);
+    HexData hexdata;
+    if (!hexdata.read_hex(infile))
+    {
+        fprintf(stderr, "Failed to read file: %s\n", infile);
+        exit(1);
+    }
+
     if (debug) hexdata.dump(stdout);
 
     //code = canon->extract(HEX_FILE_FLASH_CODE_ADDRESS, HEX_FILE_FLASH_CODE_SIZE);

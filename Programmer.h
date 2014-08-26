@@ -25,30 +25,30 @@
 #define RD_TRIM_ALL     (RD_TRIM_FLASH | RD_TRIM_EEPROM)
 
 
+// verify device return code
+#define VERIFY_MATCH                    0x00
+#define VERIFY_MISMATCH_CODE            0x01
+#define VERIFY_MISMATCH_CONFIG          0x02
+#define VERIFY_MISMATCH_PROTECTION      0x04
+#define VERIFY_MISMATCH_EEPROM          0x08
+#define VERIFY_MISMATCH_WOL             0x10
+#define VERIFY_MISMATCH_DEVCONFIG       0x20
+#define VERIFY_MISMATCH_JTAGID          0x40
+
+#define VERIFY_MISSING_FILE_DATA         0x1000
+#define VERIFY_DEVICE_READ_FAILED        0x2000
+
+
+
 struct programmer_priv_s;
 
-//enum device_family_e { DEVICE_UNKNOWN=0, DEVICE_PSOC5=1 };
 
 class Programmer
 {
-/*
-  public:
-    virtual int open(const char *device_name) = 0;
-    virtual void close() = 0;
-
-    virtual bool enter_programming_mode(void) = 0;
-    virtual void exit_programming_mode(void) = 0;
-*/
-
     // state
     struct programmer_priv_s  *m_priv;
-//    enum device_family_e m_device_family;
     bool m_programmer_configured;
     DeviceData *m_devdata;
-//    struct device_geometry_s m_device_geom;
-//    libusb_device_handle * m_dev_handle;
-//    Request *request;
-//    Reply *reply;
 
     // config
     std::string m_fx2_config_file;
@@ -58,7 +58,7 @@ class Programmer
     uint16_t m_vid_configured;
     uint16_t m_pid_configured;
 
-  // internal
+   // internal
     bool SPC_is_idle(bool wait=true);
     bool SPC_is_data_ready(bool wait=true);
     uint8_t SPC_status(void);
@@ -122,13 +122,10 @@ class Programmer
     void set_debug(uint32_t flags) { m_debug = flags; }
 //    bool verify_checksum(uint16_t reference_checksum);
 
-    //void program_geom(const AppData *appdata, int *num_arrays, int *row_remainder);
     void program_geom(int code_len, int *num_arrays, int *row_remainder);
     bool read_config(std::string config_dir, std::string config_filename);
 
   public:
-//    enum mem_type_e { MT_UNKNOWN=0, MT_FLASH=1, MT_PROT=2, MT_WOL=3, MT_CONFIG=4 };
-
     Programmer();
     ~Programmer();
 
@@ -145,16 +142,17 @@ class Programmer
     bool read_device(AppData *appdata, uint32_t flags);
     bool write_device(const AppData *appdata);
     bool write_hexfile(const char *filename, const AppData *appdata);
-    bool verify_device(const AppData *appdata);
+    uint32_t verify_device(const AppData *appdata, uint32_t flags);
     void dump_flash_data(const AppData *appdata, bool shortform, const char *filename=NULL);
     bool erase_flash(void);
     void reset_cpu(void);
     void usb_clear_stall(void);
 
+    std::string verify_status_string(uint32_t verify_status);
+
   public:
     // misc
     int get_die_temperature(void);
-//    void *get_device_handle(void); // TEMP
     uint32_t get_jtag_id(void);
 
     void usb_print_info(void);

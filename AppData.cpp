@@ -50,10 +50,10 @@ bool AppData::read_hex_file(const char *filename, uint32_t default_base_address)
 {
     // default base addr is only used in obscure cases when reading snippet hex files without a high_address record
 
-    HexData *raw = new HexData(filename, default_base_address);
-    if (!raw) return false;
-    HexData *canon = raw->canonicalise();
-    delete raw;
+    HexData raw;
+    if (!raw.read_hex(filename, default_base_address)) return false;
+
+    HexData *canon = raw.canonicalise();
     if (!canon) return false;
 
 //    canon->dump(stdout);
@@ -179,8 +179,10 @@ uint32_t AppData::calc_checksum(bool truncate) const
     int checksum = 0;
 
     // code blocks
-    int nblocks = code->blockset.size();
-    int i;
+    int nblocks, i;
+
+    nblocks = code ? code->blockset.size() : 0;
+
     for(i=0; i<nblocks; i++)
     {
         const Block *block = code->blockset[i];
@@ -193,7 +195,8 @@ uint32_t AppData::calc_checksum(bool truncate) const
     }
 
     // config blocks
-    nblocks = config->blockset.size();
+    nblocks = config ? config->blockset.size() : 0;
+
     for(i=0; i<nblocks; i++)
     {
         const Block *block = config->blockset[i];

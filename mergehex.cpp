@@ -116,9 +116,12 @@ int main(int argc, char **argv)
              }
         } // while
 
-        config[filenum].filename = argv[optind]; // next argument
-        filenum++;
-        optind++;
+        if (infile_cluster)
+        {
+            config[filenum].filename = argv[optind]; // next argument
+            filenum++;
+            optind++;
+        }
     } // optind < argc
 
     argc -= optind;

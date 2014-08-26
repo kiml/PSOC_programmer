@@ -5,7 +5,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <memory>
-#include <stdexcept>
+//#include <stdexcept>
 
 #include "Programmer.h"
 
@@ -365,69 +365,9 @@ void Programmer::close()
 }
 
 
-#if 0
-bool Programmer::enter_programming_mode(void)
-{
-    return true; //   return acquire_target_device();
-}
-#endif
-
-
-
-#if 0
-//bool Programmer::read(int type, uint8_t *data, int len)
-uint8_t *Programmer::read(int type, int len)
-{
-    // len can be 0
-    uint8_t *data = NULL;
-    AppData *appdata;
-    bool rc;
-
-    switch (type)
-    {
-        case MT_FLASH:
-            //data = NV_flash_read(m_prog_geom, len);
-            rc = NV_flash_read(appdata);
-            assert(rc == true);
-            // dump_data(stderr, data, len?)
-            //free(data);
-            return data;
-            
-
-        case MT_PROT:
-            data = NV_protection_read(len);
-            // dump_data(stderr, data, len?)
-            //free(data);
-            //return true;
-            return data;
-
-        case MT_WOL:
-            data = NV_WOL_read();
-            // dump_data(stderr, data, len?)
-            //free(data);
-            //return true;
-            return data;
-
-        case MT_CONFIG:
-            data = NV_device_config_read();
-            // dump_data(stderr, data, len?)
-            //free(data);
-            //return true;
-            return data;
-
-        default:
-            assert(0 && "Unknown read type");
-            //return  false;
-            return NULL;
-    }
-
-    return NULL;
-}
-#endif
-
-
 bool Programmer::read_device(AppData *appdata, uint32_t flags)
 {
+    // No "code" state in Programmer - all "state" in appdata
     bool config_trim_flash = flags & RD_TRIM_FLASH;    // affects code and config
     bool config_trim_eeprom = flags & RD_TRIM_EEPROM;
 
@@ -441,8 +381,6 @@ bool Programmer::read_device(AppData *appdata, uint32_t flags)
     rc = NV_device_config_read(appdata);
     if (!rc) return false;
 
-#if 1
-// TEMP 
     rc = NV_flash_read(appdata, config_trim_flash); // code and config
     if (!rc) return false;
 
@@ -453,7 +391,6 @@ bool Programmer::read_device(AppData *appdata, uint32_t flags)
     fprintf(stderr,"Code checksums %s\n", (cksum == appdata->checksum)? "MATCH" : "MISMATCH!");
     if (cksum != appdata->checksum)
         fprintf(stderr, "Flash checksum: 0x%02x, calculated checksum: 0x%02x\n", appdata->checksum, cksum);
-#endif
 
     rc = NV_protection_read(appdata);
     if (!rc) return false;
@@ -521,10 +458,68 @@ bool Programmer::write_device(const AppData *appdata)
 }
 
 
-bool Programmer::verify_device(const AppData *appdata)
+
+std::string Programmer::verify_status_string(uint32_t match_status)
 {
+    if (match_status == 0) return "OK";
+
+    std::string status_str("Mismatch: ");
+
+    if (match_status & VERIFY_MISMATCH_CODE) status_str += "Code,";
+    if (match_status & VERIFY_MISMATCH_CONFIG) status_str += "Config,";
+    if (match_status & VERIFY_MISMATCH_PROTECTION) status_str += "Protectioin,";
+    if (match_status & VERIFY_MISMATCH_EEPROM) status_str += "EEPROM,";
+    if (match_status & VERIFY_MISMATCH_WOL) status_str += "WOL,";
+    if (match_status & VERIFY_MISMATCH_DEVCONFIG) status_str += "Devconfig,";
+    if (match_status & VERIFY_MISMATCH_JTAGID) status_str += "JTAGId,";
+    if (match_status & VERIFY_MISSING_FILE_DATA) status_str += "Missing File,";
+    if (match_status & VERIFY_DEVICE_READ_FAILED) status_str += "Device Read Failed,";
+
+    status_str.resize(status_str.length() - 1); // status_str.pop_back(); // remove trailing comma
+
+    return status_str;
+}
+
+
+uint32_t Programmer::verify_device(const AppData *file_appdata, uint32_t flags)
+{
+    // flags:  how to handle extra data sets (eg eeprom/protection etc) from device that are not in file data and non-zero
+    // return bitmask of mismatches
+    
     assert(0 && "TO DO");
-    return false;
+    uint32_t match_status;
+
+    if (!file_appdata) return VERIFY_MISSING_FILE_DATA;
+
+    AppData device_appdata;
+    uint32_t read_dev_flags = 0; // FIXME correct !?
+
+    bool rc = read_device(&device_appdata, read_dev_flags);
+    if (!rc) return VERIFY_DEVICE_READ_FAILED;
+
+    // compare code and config via checksum. if checksum mismatches check code and config by length/byte-by-byte if both exist
+    if (file_appdata->checksum != device_appdata.checksum)
+    {
+        // For now:
+        match_status |= (VERIFY_MISMATCH_CODE | VERIFY_MISMATCH_CONFIG);
+        // FIXME: more checks to distinguish CODE and CONFIG mismatch
+    }
+
+    // compare protection, eeprom byte for byte. missing data assume == 0
+    // FIXME
+
+    // compare security_WOL, devconfig
+    if (file_appdata->security_WOL != device_appdata.security_WOL)
+        match_status |= VERIFY_MISMATCH_WOL;
+
+    if (file_appdata->device_config != device_appdata.device_config)
+        match_status |= VERIFY_MISMATCH_DEVCONFIG;
+
+    // compare jtag_id to relevant field in metadata. Ignore rest of metadata
+    if (file_appdata->device_id != device_appdata.device_id)
+        match_status |= VERIFY_MISMATCH_JTAGID;
+    
+    return match_status;
 }
 
 
@@ -589,29 +584,37 @@ bool Programmer::configure_usb_programmer(/*const char *config_file*/)
 //    rc = fx2_cmd_rw_ram(dev_handle, FX2_REG_CTRLSTATUS, "01"); // FX2  force 8051 into reset
     rc = fx2_cmd_8051_enable(dev_handle, false);
 
-    try {
-        HexData hexdata(m_fx2_config_file.c_str());
-        fprintf(stderr, "read hex config file\n");
+//    try {
+    HexData hexdata;
 
-        HexData *newhexdata = hexdata.reshape(2048);
+    if (!hexdata.read_hex(m_fx2_config_file.c_str()))
+    {
+        fprintf(stderr, "Error reading FX2 config file: %s\n", m_fx2_config_file.c_str());
+        close_device(dev_handle, 0);
+    }
 
-        int nblocks = newhexdata->nblocks();
-        int i;
-        fprintf(stderr,"Configuring (%d) : ", nblocks);
-        for(i=0; i<nblocks; i++)
+    //fprintf(stderr, "read hex config file\n");
+
+    HexData *newhexdata = hexdata.reshape(2048);
+
+    int nblocks = newhexdata->nblocks();
+    int i;
+    fprintf(stderr,"Configuring (%d) : ", nblocks);
+    for(i=0; i<nblocks; i++)
+    {
+        const Block *block = (*newhexdata)[i];
+        assert(block != NULL);
+        fprintf(stderr,"%d ", i);
+        if (debug)
         {
-            const Block *block = (*newhexdata)[i];
-            assert(block != NULL);
-            fprintf(stderr,"%d ", i);
-            if (debug)
-            {
-                fprintf(stderr,"Sending...:\n");
-                block->dump(stderr, 48);
-            }
-            rc = fx2_cmd_rw_ram(dev_handle, block);
+            fprintf(stderr,"Sending...:\n");
+            block->dump(stderr, 48);
         }
-        fprintf(stderr,"\n");
-        delete newhexdata;
+        rc = fx2_cmd_rw_ram(dev_handle, block);
+    }
+    fprintf(stderr,"\n");
+    delete newhexdata;
+#if 0
     }
     catch (std::runtime_error& e)
     {
@@ -621,6 +624,7 @@ bool Programmer::configure_usb_programmer(/*const char *config_file*/)
         close_device(dev_handle, 0);
         return false;
     }
+#endif
 
     // Re-enable CPU
 //    rc = fx2_cmd_rw_ram(dev_handle, FX2_REG_CTRLSTATUS, "00"); // FX2  run 8051

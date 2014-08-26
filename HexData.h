@@ -59,7 +59,8 @@ struct HexData
 
     enum {BIGENDIAN, LITTLEENDIAN};
 
-    HexData(const char *filename=NULL, uint32_t default_base_address=0);
+    HexData();
+    //HexData(const char *filename=NULL, uint32_t default_base_address=0);
     // HexData(uint32_t base_address, uint8_t *data, int len);
     HexData(uint32_t base_address, v_uint8_t vdata);
 

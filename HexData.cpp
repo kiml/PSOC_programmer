@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <vector>
-#include <stdexcept>
+//#include <stdexcept>
 
 #include "HexData.h"
 
@@ -105,15 +105,20 @@ void Block::dump(FILE *fp, int max_bytes) const
 
 // ============
 
+HexData::HexData()
+{
+    blockset.reserve(100); // FIXME: any justification for this
+}
+
+#if 0
 HexData::HexData(const char *filename, uint32_t default_base_address)
 {
     blockset.reserve(100);
 
     if (filename && !read_hex(filename, default_base_address))
         throw std::runtime_error(std::string("Failed to read file: ") + std::string(filename));
-
-        //read_hex(filename);  // FIXME: what if read fails - throws exception
 }
+#endif
 
 
 HexData::HexData(uint32_t base_address, v_uint8_t vdata)
