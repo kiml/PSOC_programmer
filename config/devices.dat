@@ -1,0 +1,18 @@
+flash_rows_per_array = 256;
+
+flash_code_bytes_per_row = 256;
+flash_config_bytes_per_row = 32;
+
+flash_rows_per_protection_byte = 4;
+
+eeprom_bytes_per_row = 16;
+
+flash_code_base_address = 0x000000;
+flash_config_base_address  = 0x800000; // 0x4..800000 ?
+eeprom_base_address = 0x40008000;
+
+[PSOC5LP-xxx]
+
+flash_num_arrays = 4;
+flash_size = 262144;
+eeprom_size = 2048; // FIXME: CORRECT THIS (depends on part #)

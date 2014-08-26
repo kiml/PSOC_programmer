@@ -1,0 +1,81 @@
+* As at Aug14 running program once results in a stall. If i run ataing I get timeouts. clearing stall fixes this so  prog 0; prog 0 (FAILS).  prog 0; prog 9; prog 0; WORKS. Also replace 0 with 8....
+
+* NOTE: my remainder code for fractions of blocks etc may have a bug in it. Check completion on exactly boundary cases
+        Corrected: int count = (remainder && i==num_blocks-1) ? remainder : blocksize; !?
+* need a tool to convert bin to augmented hex (note can use objcopy to convert elf to bin or hex but not enough for programming). Maybe take multiple files as imputs (eg  program, config_data, registers
+* move configuration code into a hex file - DONE
+* read hex file to write flash (check  001-81290 pdf A.1 for details of hex format files and header lines)
+* verify
+* Maybe add a num cmds counter to request so we can auto-pop the correct number of replies (although we need to understand which have data...
+* annotate a hex file (to std out) also for reader. Define config settings etc.  A.4 and TRM 43.4 etc
+* exit programming mode.
+* make sure we don't get timeouts (ie add robustness)
+* compare functionality of programmer with windows version
+* Can I access Software SW* debug?
+* When interface falls over (STALL): "The host tells the firmware to set or clear the stall condition for an end- point using the Set Feature/Stall and Clear Feature/Stall requests. Once the firmware stalls an endpoint, it should not remove the stall until the host issues a Clear Feature/Stall request. An exception to this rule is endpoint 0, which reports a stall condition only for the current transaction and then automatically clears the stall condition."
+* Using SWD I may be able to actually control peripherals... 42.3.4
+
+* Handle 256 and 288 byte data formats - 256 NOT TESTED
+* read psoc and put into a hex file. - DONE but need to test reflashing uploaded file
+* simplify control info sent to programmer device. - DONE !?
+* write config_flash - DONE !?
+
+* write_flash - DONE
+* compile arm code and download it to PSOC. (what arm set etc) - DONE
+* Doesn't know where to find hex config file - done
+* erase sector, all - DONE
+* sort out command line options - DONE
+* create a program struct that contains all data (config checksum etc. I think currently it's place in magic locations in HEX file) - DONE !?
+
+
+PSoC programming need
+----------------
+* register list header file of all regs
+* mapping of jtag id to device name
+* maybe copies of precanned logic blocks
+* need a config file format for each I/O pin
+
+
+* Demos
+* Use UDB PLDs (ch 23.3) to create logic . Can data path be memory mapped ? Can I write a value and read logic results? Can I attach UDB to memory bus and trigger a counter on a certain variable being changed !?
+ pg 155. Could do a CRC hardware engine in for s/w. Dynamic config etc.
+
+
+============
+Tools
+
+1) psoc_ctrl CMD args
+//     *  load file.hex
+//     *  save file.hex
+     *  program/download [file.hex]
+     *  upload [file.hex]
+     *  verify [file.hex]
+     *  psoc_reset
+     *  enter_programming_mode
+//     *  exit_programming_mode
+     *  usb_reset
+     *  debug...
+     *  read_mem ...
+     *  read_reg [NVL|WOL...]...
+//     *  write_mem ...
+Option to ';' separate commands on command line:  "load file.x;download;verify;reset;"
+next only works if prev succeeds
+
+  * CMD:  file:file.hex to psoc[:subsystem]
+  * CMD:  file.hex:prog, file.hex:data, file.hex:prot file.hex:regs to psoc[:subsystem]
+  * CMD:  psoc[:subsystem] to file:file.hex
+
+
+1) psoc_hexfile CMD args
+  Any file can have extension .hex for hex or .bin for binary or do I determine input type auto but not so output type... ? 
+  * CMD:  -c psoc5lp-xyz  -p file.hex  -d file.hex  -s file.hex -r file.hex  [-o file.hex] or stdout
+  * CMD:  -c config  -i file.hex [-o file.hex|bin]
+  * CMD:  file.hex, -d file.hex, -s file.hex -r file.hex -o file.hex
+also a splitter... ?
+
+  * CMD:  -c config  -i|-ip|-id|-is|-ir file.hex [-o|-op|-od|-os|-or file.hex|bin]
+  * CMD:  -c config  [-i(.pdsr) file]*  [-o(.pdsr) file]* 
+
+-------
+
+buildhex could take a config file for misc args also on command line rather than from hex files
