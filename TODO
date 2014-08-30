@@ -1,3 +1,7 @@
+** LICENSE
+** set confi dir = bindir/../config
+** clean up source
+
 * As at Aug14 running program once results in a stall. If i run ataing I get timeouts. clearing stall fixes this so  prog 0; prog 0 (FAILS).  prog 0; prog 9; prog 0; WORKS. Also replace 0 with 8....
 
 * NOTE: my remainder code for fractions of blocks etc may have a bug in it. Check completion on exactly boundary cases

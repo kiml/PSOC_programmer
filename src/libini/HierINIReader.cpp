@@ -1,3 +1,7 @@
+// Copyright (c) 2014, Datafusion Systems Pty Ltd
+// All rights reserved.
+// This code is released under same license (New BSD) as the inih reader it is based upon.
+
 #include <stdlib.h>
 
 #include "HierINIReader.h"

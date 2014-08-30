@@ -8,7 +8,6 @@
 
 #include "AppData.h"
 #include "DeviceData.h"
-#include "types.h"
 
 //#define SUCCESS   true
 //#define FAILURE   false

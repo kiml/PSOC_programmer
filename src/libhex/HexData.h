@@ -5,8 +5,11 @@
 #include <stdbool.h>
 #include <vector>
 
-#include "types.h"
+typedef std::vector<uint8_t> v_uint8_t;
+
+//#include "types.h"
 //#include "utils.h"
+
 
 // Intel Hex File Format.
 //    :CCAAAATTDDDDD...DDDKK

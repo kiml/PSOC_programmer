@@ -14,7 +14,6 @@
 #include "usb.h"
 #include "fx2.h"
 #include "utils.h"
-#include "types.h"
 
 
 #define VID_CYPRESS     0x04B4

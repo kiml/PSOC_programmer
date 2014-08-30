@@ -2,10 +2,8 @@
 #include <stdio.h>
 #include <assert.h>
 #include <vector>
-//#include <stdexcept>
 
 #include "HexData.h"
-
 #include "utils.h"
 
 

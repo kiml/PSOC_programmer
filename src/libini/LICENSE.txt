@@ -1,4 +1,4 @@
-
+http://code.google.com/p/inih/
 The "inih" library is distributed under the New BSD license:
 
 Copyright (c) 2009, Brush Technology

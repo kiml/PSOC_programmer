@@ -1,0 +1,19 @@
+This directory contains the core code from http://code.google.com/p/inih/
+Minor changes have been made to the original class to allow dervived classes
+
+New features in derived class:
+ * hierarchical functionality (see below)
+ * A uint32 type (to avoid potential casting problems from existing signed integer)
+
+
+This hierarchical INI file format supports sections of the form
+    [a.b.c]
+      key = value
+
+If the hierarchical searching is used then key will be searched for in:
+    [a.b.c].key
+    [a.b].key
+    [a].key
+    [].key
+
+where the last case is the "global" section - ie the region before the first explicit file section []
