@@ -1,4 +1,4 @@
-// Copyright (c) 2014, Datafusion Systems Pty Ltd
+// Copyright (C) 2014 Kim Lester
 // All rights reserved.
 // This code is released under same license (New BSD) as the inih reader it is based upon.
 
