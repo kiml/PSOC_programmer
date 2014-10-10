@@ -29,7 +29,7 @@
 #include "Programmer.h"
 #include "AppData.h"
 #include "DeviceData.h"
-//#include "INIReader.h"
+#include "version.h"
 
 
 // FIXME: put into a siteconfig.h file (and other defaults ?)
@@ -97,7 +97,9 @@ char *Progname = NULL;
 //void usage(const char *progname)
 void usage(void)
 {
-    fprintf(stderr, "Usage: %s CMD\n  where CMD is:\n", Progname);
+    fprintf(stderr, "PSoC Programmer, v%s\n"
+        "Copyright (C) 2014 Kim Lester, http://www.dfusion.com.au/\n\n"
+        "Usage: %s CMD\n  where CMD is:\n", VERSION_STR, Progname);
     int i;
     for (i=0; i<NCmds; i++)
     {
@@ -121,14 +123,16 @@ bool read_device_config(struct config_s *config)
 
     std::string device_filepath = config->config_dir + std::string("/") + config->device_filename;
 
-    fprintf(stderr, "devdata: filepath:%s, device_name:%s\n", device_filepath.c_str(), config->device_name.c_str());
+    fprintf(stderr, "devdata: filepath:%s, device_name:%s\n",
+        device_filepath.c_str(), config->device_name.c_str());
 
     config->devdata->read_file(device_filepath, config->device_name);
     //config->devdata->dump();
 
     if (!config->devdata->validate())
     {
-        fprintf(stderr, "Device %s (File: %s) failed basic validity checks\n", config->device_name.c_str(), device_filepath.c_str());
+        fprintf(stderr, "Device %s (File: %s) failed basic validity checks\n",
+            config->device_name.c_str(), device_filepath.c_str());
         config->devdata->dump();
         return false;
     }
@@ -163,7 +167,7 @@ void parse_args(int *argc, char ***argv, struct config_s *config)
     config->device_filename = DEFAULT_DEVICE_FILE;
 
     int ch;
-    while ((ch = getopt(*argc, *argv, "C:d:")) != -1)
+    while ((ch = getopt(*argc, *argv, "hC:d:")) != -1)
     {
         switch (ch)
         {
@@ -175,6 +179,7 @@ void parse_args(int *argc, char ***argv, struct config_s *config)
                 config->device_name = optarg;
                 break;
 
+            case 'h':
             default:
                 usage();
                 break;
@@ -277,7 +282,8 @@ int cmd_program(struct config_s *config, int nargs, char **argv)
 
     if (appdata.device_id != idcode)
     {
-        fprintf(stderr,"Error. device id's mismatch (file: 0x%08x, device: 0x%08x).\n", appdata.device_id, idcode);
+        fprintf(stderr,"Error. device ids mismatch (file: 0x%08x, device: 0x%08x).\n", appdata.device_id, idcode);
+
         if (idcode == 0)
             fprintf(stderr,"Failed to obtain device id\n");
         else

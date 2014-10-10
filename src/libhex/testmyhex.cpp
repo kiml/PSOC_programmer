@@ -45,12 +45,12 @@ bool testcheck(int testnum, const uint8_t *testdata, const uint8_t *refdata, int
 {
     if (memcmp(testdata, refdata, n) == 0)
     {
-        fprintf(stderr,"Test %d: Passed\n", testnum);
+        fprintf(stderr, "Test %d: Passed\n", testnum);
         return true;
     }
 
     int i;
-    fprintf(stderr,"Test %d: Failed\n", testnum);
+    fprintf(stderr, "Test %d: Failed\n", testnum);
     // print differencecs
     fprintf(stderr, "TestData: ");
     for (i=0;i<n;i++) fprintf(stderr, "%x ", testdata[i]);
@@ -108,7 +108,7 @@ int main()
     testnum = 1; // below
     addr_start = 0;
     len = 256;
-    fprintf(stderr,"Test %d: %s, %d - %d\n", testnum, "below", addr_start, addr_start + len);
+    fprintf(stderr, "Test %d: %s, %d - %d\n", testnum, "below", addr_start, addr_start + len);
     data = test1.extract2bin(addr_start, len);
     testcheck(testnum, data, refdata, len);
     free(data);
@@ -121,10 +121,10 @@ int main()
     testcheck(testnum, data, refdata, len);
     free(data);
 
-    testnum = 3; // across lower boundry
+    testnum = 3; // across lower boundary
     addr_start = 128;
     len = 200;
-    fprintf(stderr,"Test %d: %s, %d - %d\n", testnum, "across lower boundry", addr_start, addr_start+len);
+    fprintf(stderr, "Test %d: %s, %d - %d\n", testnum, "across lower boundary", addr_start, addr_start+len);
     data = test1.extract2bin(addr_start, len);
     setref(refdata, 256 - addr_start, 256 - (256 - addr_start), 0, true);
     testcheck(testnum, data, refdata, 256 - (256 - addr_start));
@@ -132,8 +132,8 @@ int main()
 
     testnum = 4;
     addr_start = 511;
-    len = 64; // across upper boundry
-    fprintf(stderr,"Test %d: %s, %d - %d\n", testnum, "across upper boundry", addr_start, addr_start+len);
+    len = 64; // across upper boundary
+    fprintf(stderr, "Test %d: %s, %d - %d\n", testnum, "across upper boundary", addr_start, addr_start+len);
     data = test1.extract2bin(addr_start, len);
     memset(refdata, 0, 256);
     refdata[0] = 255;
@@ -143,7 +143,7 @@ int main()
     testnum = 5; // exact length
     addr_start = 256;
     len = 256;
-    fprintf(stderr,"Test %d: %s, %d - %d\n", testnum, "exact length", addr_start, addr_start+len);
+    fprintf(stderr, "Test %d: %s, %d - %d\n", testnum, "exact length", addr_start, addr_start+len);
     data = test1.extract2bin(addr_start, len);
     setref(refdata, 0, len, 0, true);
     testcheck(testnum, data, refdata, len);
@@ -152,7 +152,7 @@ int main()
     testnum = 6; // inside
     addr_start = 300;
     len = 64;
-    fprintf(stderr,"Test %d: %s, %d - %d\n", testnum, "inside", addr_start, addr_start+len);
+    fprintf(stderr, "Test %d: %s, %d - %d\n", testnum, "inside", addr_start, addr_start+len);
     data = test1.extract2bin(addr_start, len);
     setref(refdata, 0, len, 300-256, true);
     testcheck(testnum, data, refdata, len);
@@ -161,7 +161,7 @@ int main()
     testnum = 7; // outside
     addr_start = 128;
     len = 512;
-    fprintf(stderr,"Test %d: %s, %d - %d\n", testnum, "outside", addr_start, addr_start+len);
+    fprintf(stderr, "Test %d: %s, %d - %d\n", testnum, "outside", addr_start, addr_start+len);
     data = test1.extract2bin(addr_start, len);
     memset(refdata, 0, 512);
     setref(refdata+128, 0, 256, 0, false);
@@ -171,7 +171,7 @@ int main()
     testnum = 8; // exact length (one block)
     addr_start = 288;
     len = 32;
-    fprintf(stderr,"Test %d: %s, %d - %d\n", testnum, "exact length (one block)", addr_start, addr_start+len);
+    fprintf(stderr, "Test %d: %s, %d - %d\n", testnum, "exact length (one block)", addr_start, addr_start+len);
     data = test1.extract2bin(addr_start, len);
     setref(refdata, 0, len, 288-256, true);
     testcheck(testnum, data, refdata, len);
@@ -180,7 +180,7 @@ int main()
     testnum = 9; // inside (one block)
     addr_start = 290;
     len = 12;
-    fprintf(stderr,"Test %d: %s, %d - %d\n", testnum, "inside (one block)", addr_start, addr_start+len);
+    fprintf(stderr, "Test %d: %s, %d - %d\n", testnum, "inside (one block)", addr_start, addr_start+len);
     data = test1.extract2bin(addr_start, len);
     setref(refdata, 0, len, 290-256, true);
     testcheck(testnum, data, refdata, len);
@@ -192,7 +192,7 @@ int main()
     testnum = 10; // below
     addr_start = 0;
     len = 256;
-    fprintf(stderr,"Test %d: %s, %d - %d\n", testnum, "below", addr_start, addr_start + len);
+    fprintf(stderr, "Test %d: %s, %d - %d\n", testnum, "below", addr_start, addr_start + len);
     HexData *hdata = test1.extract(addr_start, len);
     data = hdata->extract2bin(addr_start, len);
     testcheck(testnum, data, refdata, len);
@@ -201,16 +201,16 @@ int main()
     testnum = 11; // above
     addr_start = 512;
     len = 64;
-    fprintf(stderr,"Test %d: %s, %d - %d\n", testnum, "above", addr_start, addr_start + len);
+    fprintf(stderr, "Test %d: %s, %d - %d\n", testnum, "above", addr_start, addr_start + len);
     hdata = test1.extract(addr_start, len);
     data = hdata->extract2bin(addr_start, len);
     testcheck(testnum, data, refdata, len);
     free(data);
 
-    testnum = 12; // across lower boundry
+    testnum = 12; // across lower boundary
     addr_start = 128;
     len = 200;
-    fprintf(stderr,"Test %d: %s, %d - %d\n", testnum, "across lower boundry", addr_start, addr_start+len);
+    fprintf(stderr, "Test %d: %s, %d - %d\n", testnum, "across lower boundary", addr_start, addr_start+len);
     hdata = test1.extract(addr_start, len);
     data = hdata->extract2bin(addr_start, len);
     setref(refdata, 256 - addr_start, 256 - (256 - addr_start), 0, true);
@@ -219,8 +219,8 @@ int main()
 
     testnum = 13;
     addr_start = 511;
-    len = 64; // across upper boundry
-    fprintf(stderr,"Test %d: %s, %d - %d\n", testnum, "across upper boundry", addr_start, addr_start+len);
+    len = 64; // across upper boundary
+    fprintf(stderr, "Test %d: %s, %d - %d\n", testnum, "across upper boundary", addr_start, addr_start+len);
     hdata = test1.extract(addr_start, len);
     data = hdata->extract2bin(addr_start, len);
     memset(refdata, 0, 256);
@@ -231,7 +231,7 @@ int main()
     testnum = 14; // exact length
     addr_start = 256;
     len = 256;
-    fprintf(stderr,"Test %d: %s, %d - %d\n", testnum, "exact length", addr_start, addr_start+len);
+    fprintf(stderr, "Test %d: %s, %d - %d\n", testnum, "exact length", addr_start, addr_start+len);
     hdata = test1.extract(addr_start, len);
     data = hdata->extract2bin(addr_start, len);
     setref(refdata, 0, len, 0, true);
@@ -241,7 +241,7 @@ int main()
     testnum = 15; // inside
     addr_start = 300;
     len = 64;
-    fprintf(stderr,"Test %d: %s, %d - %d\n", testnum, "inside", addr_start, addr_start+len);
+    fprintf(stderr, "Test %d: %s, %d - %d\n", testnum, "inside", addr_start, addr_start+len);
     hdata = test1.extract(addr_start, len);
     data = hdata->extract2bin(addr_start, len);
     setref(refdata, 0, len, 300-256, true);
@@ -251,7 +251,7 @@ int main()
     testnum = 16; // outside
     addr_start = 128;
     len = 512;
-    fprintf(stderr,"Test %d: %s, %d - %d\n", testnum, "outside", addr_start, addr_start+len);
+    fprintf(stderr, "Test %d: %s, %d - %d\n", testnum, "outside", addr_start, addr_start+len);
     hdata = test1.extract(addr_start, len);
     data = hdata->extract2bin(addr_start, len);
     memset(refdata, 0, 512);

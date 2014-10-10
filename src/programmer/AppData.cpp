@@ -78,10 +78,10 @@ bool AppData::read_hex_file(const char *filename, uint32_t default_base_address)
 
     clear();
 
-    code = canon->extract(HexFileFormat::FLASH_CODE_ADDRESS, HexFileFormat::FLASH_CODE_SIZE);
-    config = canon->extract(HexFileFormat::CONFIG_ADDRESS, HexFileFormat::CONFIG_SIZE);
-    protection = canon->extract(HexFileFormat::PROTECTION_ADDRESS, HexFileFormat::PROTECTION_SIZE);
-    eeprom = canon->extract(HexFileFormat::EEPROM_ADDRESS, HexFileFormat::EEPROM_SIZE);
+    code = canon->extract(HexFileFormat::FLASH_CODE_ADDRESS, HexFileFormat::FLASH_CODE_MAX_SIZE);
+    config = canon->extract(HexFileFormat::CONFIG_ADDRESS, HexFileFormat::CONFIG_MAX_SIZE);
+    protection = canon->extract(HexFileFormat::PROTECTION_ADDRESS, HexFileFormat::PROTECTION_MAX_SIZE);
+    eeprom = canon->extract(HexFileFormat::EEPROM_ADDRESS, HexFileFormat::EEPROM_MAX_SIZE);
 
     checksum = canon->uint_at(HexFileFormat::CHECKSUM_ADDRESS, 2, HexData::BIGENDIAN);
 

@@ -64,6 +64,7 @@ struct infile_config_s
 // EEPROM not supported in formal definition:
 #define IFF_EEPROM     32
 
+
 int main(int argc, char **argv)
 {
     int debug = 0;
@@ -76,8 +77,9 @@ int main(int argc, char **argv)
     int ch;
 //    opterr = 0; // disable error messages (as we're doing tricky things)
 
-    // we could probably do this in one getopt by checking that Infile_optstring arguments were not mixed with others in the same argument.
-    // cdemnp do take an argument but each cluster shares the same argument. So process specially.
+    // we could probably do this in one getopt by checking that Infile_optstring
+    // arguments were not mixed with others in the same argument.
+    // cdemnp do take an argument but each cluster shares the same argument, so process specially.
 
     while (optind < argc)
     {
@@ -121,7 +123,8 @@ int main(int argc, char **argv)
                 case 'o':
                     if (infile_cluster)
                     {
-                        fprintf(stderr, "Command Line Error. Cannot combine %s arguments with other arguments.\n", Infile_optstring);
+                        fprintf(stderr, "Command Line Error."
+                            " Cannot combine %s arguments with other arguments.\n", Infile_optstring);
                         usage();
                     }
 
@@ -174,21 +177,30 @@ int main(int argc, char **argv)
 
         if (cfg->flags & IFF_CODE)
         {
-            if (iff_done & IFF_CODE) { fprintf(stderr, "Bad Options: code included multiple times.\n"); exit(1); }
+            if (iff_done & IFF_CODE)
+            {
+                fprintf(stderr, "Bad Options: code included multiple times.\n");
+                exit(1);
+            }
             iff_done |= IFF_CODE;
             outdata.code = tmp.code;
         }
 
         if (cfg->flags & IFF_DATA)
         {
-            if (iff_done & IFF_DATA) { fprintf(stderr, "Bad Options: data included multiple times.\n"); exit(1); }
+            if (iff_done & IFF_DATA)
+            {
+                fprintf(stderr, "Bad Options: data included multiple times.\n");
+                exit(1);
+            }
             iff_done |= IFF_DATA;
             outdata.config = tmp.config;
 #if 0
             if (tmp.config->length() == 0 && tmp.code->length() != 0)
             {
                 // This happens when a "standard" config.hex file is used without the pre
-                fprintf(stderr,"Error: Config data is NOT located at expected address of 0x%08x. Address record may be missing.\n", HexFileFormat::CONFIG_ADDRESS);
+                fprintf(stderr,"Error: Config data is NOT located at expected address of 0x%08x."
+                    " Address record may be missing.\n", HexFileFormat::CONFIG_ADDRESS);
                 exit(1);
             }
 #endif
@@ -196,28 +208,46 @@ int main(int argc, char **argv)
 
         if (cfg->flags & IFF_EEPROM)
         {
-            if (iff_done & IFF_EEPROM) { fprintf(stderr, "Bad Options: EEPROM included multiple times.\n"); exit(1); }
+            if (iff_done & IFF_EEPROM)
+            {
+                fprintf(stderr, "Bad Options: EEPROM included multiple times.\n");
+                exit(1);
+            }
             iff_done |= IFF_EEPROM;
             outdata.eeprom = tmp.eeprom;
         }
 
         if (cfg->flags & IFF_PROTECTION)
         {
-            if (iff_done & IFF_PROTECTION) { fprintf(stderr, "Bad Options: protection included multiple times.\n"); exit(1); }
+            if (iff_done & IFF_PROTECTION)
+            {
+                fprintf(stderr, "Bad Options: protection included multiple times.\n");
+                exit(1);
+            }
             iff_done |= IFF_PROTECTION;
             outdata.protection = tmp.protection;
         }
+
         if (cfg->flags & IFF_NVR)
         {
-            if (iff_done & IFF_NVR) { fprintf(stderr, "Bad Options: NVR included multiple times.\n"); exit(1); }
+            if (iff_done & IFF_NVR)
+            {
+                fprintf(stderr, "Bad Options: NVR included multiple times.\n");
+                exit(1);
+            }
             iff_done |= IFF_NVR;
 
             outdata.device_config = tmp.device_config;
             outdata.security_WOL = tmp.security_WOL;
         }
+
         if (cfg->flags & IFF_METADATA)
         {
-            if (iff_done & IFF_METADATA) { fprintf(stderr, "Bad Options: Metadata included multiple times.\n"); exit(1); }
+            if (iff_done & IFF_METADATA)
+            {
+                fprintf(stderr, "Bad Options: Metadata included multiple times.\n");
+                exit(1);
+            }
             iff_done |= IFF_METADATA;
 
             // FIXME: ideally I could treat this as opaque data
@@ -227,7 +257,6 @@ int main(int argc, char **argv)
             outdata.debug_enable = tmp.debug_enable;
             outdata.reserved = tmp.reserved;
         }
-
     }
 
     outdata.checksum = outdata.calc_checksum();
