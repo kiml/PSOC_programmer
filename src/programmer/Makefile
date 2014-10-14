@@ -8,5 +8,6 @@ LDFLAGS = ../libhex/libhex.a ../libini/libini.a -L /usr/local/lib -lusb-1.0
 include ../Makefile.inc
 
 prog: $(OBJS)
+	$(CXX) $(LDFLAGS) $(OBJS) -o $@
 
 install: prog

@@ -20,9 +20,13 @@
 */
 
 #include <stdint.h>
+#include <stdbool.h>
 
 #include <libusb-1.0/libusb.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 bool usb_init(void);
 void usb_finalise(void);
@@ -50,5 +54,9 @@ void print_device_info2(libusb_device_handle *dev_handle);
 //void find_device(int vid, int pid, struct libusb_device_descriptor *pDesc);
 //void print_string_descriptors(libusb_device_handle *dev_handle);
 void print_string_descriptor(libusb_device_handle *dev_handle, int index, const char *label);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

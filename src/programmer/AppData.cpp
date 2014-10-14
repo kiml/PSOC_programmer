@@ -278,9 +278,9 @@ void AppData::dump(bool shortform, const char *filename) const
     fprintf(fp, "  (b23) XRESMEN: P1[2] is %s\n", (device_config & 0x800000) ? "XRES" : "GPIO");
     fprintf(fp, "  (b22) DEBUG_EN: %d\n", (device_config & 0x4000000) ? 1 : 0);
     fprintf(fp, "\n");
-    //dump_data(fp, device_config, 4);
+    //dump_data(fp, device_config, 4, NULL);
     fprintf(fp, "WOL: 0x%04x\n", security_WOL);
-    //dump_data(fp, security_WOL, 4);
+    //dump_data(fp, security_WOL, 4, NULL);
 
     fprintf(fp, "code checksum: 0x%04x\n", checksum);
     uint32_t calc_cksum = calc_checksum(true);

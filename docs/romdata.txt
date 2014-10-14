@@ -1,0 +1,81 @@
+Overview
+--------
+
+This utility is used to create configuration data (address and data) values
+to initialise microcontroller configuration registers.
+It creates a list of various data structures. Each structure is designed
+to optimise one common type of data initialisation requirement (eg constant
+fill, data copy etc). The data may be stored anywayre in FLASH but on PSOC
+is typically stored in the so called FLASH "configuration" area. A C function
+is supplied to walk the list, decode and action each entry.
+
+
+Memory Data Structure
+---------------------
+
+The top level entity is a list of data structures. The first byte of a
+structure contains the structure type, the list ends with an element
+type of CFG_TT_UNDEF. There are 4 types of initialisation structure:
+Type: 1: constant fill, 2: offset,value, 3: data fill, 4: mem to mem copy
+
+list structure:
+  [ HEADER ELEMENT ]* 0000
+  ->
+  [ ttcc aaaa aaaa ELEMENT ]* 0000
+      tt: type
+      cc: count_low
+      a...a: 32 bit address
+      0000 is the list terminating value of ttcc
+
+ ELEMENT tt == 1:  constant fill
+   ccvv
+      cc: count_hi
+      vv: value
+
+ ELEMENT tt == 2:  offset value
+   [ oovv ]+
+      oo: offset
+      vv: value
+      "oovv" structure repeats cc (count_low) times
+
+ ELEMENT tt == 3:  data array
+   [ vv ]+
+      vv: value
+      "vv" structure repeats cc (count_low) times
+
+ ELEMENT tt == 4:  address copy
+   ssss ssss
+      s...s: 32 bit (source) address
+
+Note:
+ * For compactness addresses (eg 32 bit addresses) are NOT aligned on usual
+      memory boundaries.
+
+
+Source File Format
+------------------
+
+Grammer:
+  #include "filename.h"
+  #define NAME VALUE
+  #label NAME [@ADDRESS]
+
+  addr : value [* count]              # type 1
+  addr : value                        # type 2
+  addr : hex bytes.... [ @ width ]    # type 3  NOTE: width not currently supported
+  addr : [src_addr] [* count]         # type 4
+
+Notes:
+ * addr, value, count may be expressed in standard C (well Python)
+      format, decimal, hex (0x...) etc.
+
+ * normal C include files should work to pull in #define lines
+
+ * only one label (before "addr:" lines) is currently permitted.
+
+ * there are two output modes - strictly in source order and optimised
+      (within a label group). The optimisation groups multiple
+      single value type 2 items into a CFG_TT_OV structure where possible.
+
+ * A single value could be stored via types 1, 2 or 3. The canoncial format is
+      type 2XXX to allow grouping of other single values.

@@ -3,10 +3,12 @@ PROGNAMES ?=
 TESTPROGNAMES ?=
 TARGETS = $(LIBNAME) $(PROGNAMES) $(TESTPROGNAMES)
 
-CC=g++
-CFLAGS= $(INC)
-#CPPFLAGS= $(INC)
+CC=gcc
+CXX=g++
+CFLAGS += $(INC)
+CPPFLAGS += $(INC)
 INSTALL=install
+COPY=cp
 
 
 # General Targets
@@ -28,7 +30,7 @@ ifdef PROGNAMES
 endif
 
 
-clean:
+clean::
 	 rm -f *.o $(TARGETS)
 
 
@@ -40,9 +42,12 @@ $(LIBNAME): $(OBJS)
 
 
 %.o: %.cpp
-	$(CC) $(CFLAGS) -c $<
+	$(CXX) $(CPPFLAGS) -c $<
 
 %.o: %.cc
+	$(CXX) $(CPPFLAGS) -c $<
+
+%.o: %.c
 	$(CC) $(CFLAGS) -c $<
 
 #%.a: %.o
@@ -54,6 +59,6 @@ $(LIBNAME): $(OBJS)
 	$(AR) cr $@ $.*o
 
 %.d: %.c
-	$(SHELL) -ec '$(CC) -M $(CPPFLAGS) $< \
+	$(SHELL) -ec '$(CC) -M $(CFLAGS) $< \
 		| sed '\"s/$*\\.o[ :]*/& $@/g'\" > $@'
 

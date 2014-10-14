@@ -51,11 +51,11 @@ int main(int argc, char **argv)
 
     if (debug) hexdata.dump(stdout);
 
-    //code = canon->extract(HEX_FILE_FLASH_CODE_ADDRESS, HEX_FILE_FLASH_CODE_SIZE);
-    //config = canon->extract(HEX_FILE_CONFIG_ADDRESS, HEX_FILE_CONFIG_SIZE);
-    //int code_len = hexdata.length(HEX_FILE_FLASH_CODE_ADDRESS, HEX_FILE_FLASH_CODE_SIZE, NULL);
+    //code = canon->extract(HEX_FILE_FLASH_CODE_ADDRESS, HEX_FILE_FLASH_CODE_MAX_SIZE);
+    //config = canon->extract(HEX_FILE_CONFIG_ADDRESS, HEX_FILE_CONFIG_MAX_SIZE);
+    //int code_len = hexdata.length(HEX_FILE_FLASH_CODE_ADDRESS, HEX_FILE_FLASH_CODE_MAX_SIZE, NULL);
     uint32_t min_address, max_address;
-    bool rc = hexdata.minmax_address(HexFileFormat::FLASH_CODE_ADDRESS, HexFileFormat::FLASH_CODE_SIZE, &min_address, &max_address);
+    bool rc = hexdata.minmax_address(HexFileFormat::FLASH_CODE_ADDRESS, HexFileFormat::FLASH_CODE_MAX_SIZE, &min_address, &max_address);
     fprintf(stderr, "Code:  ok:%d, min:0x%0x, max:0x%0x, len=%d\n", rc, min_address, max_address, max_address-min_address);
     uint8_t *code = NULL;
     if (rc)
@@ -68,8 +68,8 @@ int main(int argc, char **argv)
 
     if (code) free(code);
 
-//    int config_len = hexdata.length(HEX_FILE_FLASH_CONFIG_ADDRESS, HEX_FILE_FLASH_CONFIG_SIZE, NULL);
-    rc = hexdata.minmax_address(HexFileFormat::CONFIG_ADDRESS, HexFileFormat::CONFIG_SIZE, &min_address, &max_address);
+//    int config_len = hexdata.length(HEX_FILE_FLASH_CONFIG_ADDRESS, HEX_FILE_FLASH_CONFIG_MAX_SIZE, NULL);
+    rc = hexdata.minmax_address(HexFileFormat::CONFIG_ADDRESS, HexFileFormat::CONFIG_MAX_SIZE, &min_address, &max_address);
     fprintf(stderr, "Config:  ok:%d, min:0x%0x, max:0x%0x, len=%d\n", rc, min_address,max_address, max_address-min_address);
 #if 0
     uint8_t *config = NULL;

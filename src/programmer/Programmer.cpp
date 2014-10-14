@@ -1047,7 +1047,7 @@ bool Programmer::NV_flash_write(const AppData *appdata)
                 hexdata_address = HexFileFormat::CONFIG_ADDRESS + ri * m_devdata->flash_config_bytes_per_row;
                 appdata->config->extract2bin(hexdata_address, 
                         m_devdata->flash_config_bytes_per_row, row_data + m_devdata->flash_code_bytes_per_row);
-                dump_data(stderr, row_data + m_devdata->flash_code_bytes_per_row, m_devdata->flash_config_bytes_per_row,"CONFIG");
+                dump_data(stderr, row_data + m_devdata->flash_code_bytes_per_row, m_devdata->flash_config_bytes_per_row, "CONFIG");
             }
 
             if (!NV_write_row(ai, ri, die_temp, row_data, row_len))
@@ -1613,7 +1613,7 @@ bool Programmer::NV_flash_write_row(uint8_t array_num, uint8_t row_num, int die_
     fprintf(stderr, "write_flash_row: array:%d, row:%d, row_len:%d, die_temp:%d (%d:%d), even:%d\n", array_num, row_num, row_len, die_temp, die_temp_sign, die_temp_mag, even);
 
 // FIXME: TEMP
-dump_data(stderr, data, row_len);
+dump_data(stderr, data, row_len, NULL);
 //return true;
 
     // Store data and "program row (0x07) command in memory
@@ -2065,7 +2065,7 @@ bool Programmer::SPC_cmd(uint8_t cmd, uint8_t *args, int nargs)
     if (m_debug & DEBUG_SPC)
     {
         fprintf(stderr,"SPC_cmd(cmd: 0x%02x,", cmd);
-        dump_data(stderr, args, nargs);
+        dump_data(stderr, args, nargs, NULL);
     }
 #if 1
     if (!SPC_is_idle()) return false;    
@@ -2153,7 +2153,7 @@ void Request::raw_hex(const char *hexstr)
 
     int binlen = hex_to_bin(hexstr, m_data + m_len, len);
     m_len += binlen;
-    //dump_data(stderr, m_data, m_len);
+    //dump_data(stderr, m_data, m_len, NULL);
 }
 
 
@@ -2248,7 +2248,7 @@ bool Reply::receive(libusb_device_handle *dev_handle)
     }
     m_len = actual_len;
 
-    if (m_debug) { fprintf(stderr, "Reply:receive "); dump_data(stderr, m_data, actual_len); }
+    if (m_debug) { dump_data(stderr, m_data, actual_len, "Reply:receive"); }
     return true;
 }
 
@@ -2293,7 +2293,7 @@ bool Reply::pop_ok(int n)
     {
         fprintf(stderr, "\npop_ok %s ", ok ? "OK" : "Failed");
         fprintf(stderr, "Expected 0x%x found 0x%x.\nData (%d): ", REPLY_OK , data, m_len);
-        dump_data(stderr, m_data, m_len);
+        dump_data(stderr, m_data, m_len, NULL);
     }
 
     return ok;

@@ -94,7 +94,7 @@ libusb_device_handle *open_device(int vid, int pid, int config, int interface, i
     rc = libusb_set_configuration(dev_handle, config); // config==bConfiguraitonValue
     if (rc < 0)
     {
-        fprintf(stderr,"libusb: set configuraton %d failed: %d %s\n", config, rc, libusb_strerror((libusb_error)rc));
+        fprintf(stderr,"libusb: set configuraton %d failed: %d %s\n", config, rc, libusb_strerror((enum libusb_error)rc));
         libusb_close(dev_handle);
         return NULL;
     }
@@ -103,7 +103,7 @@ libusb_device_handle *open_device(int vid, int pid, int config, int interface, i
     rc = libusb_claim_interface(dev_handle, interface);
     if (rc < 0)
     {
-        fprintf(stderr,"libusb: claim interface %d failed: %d %s\n", interface, rc, libusb_strerror((libusb_error)rc));
+        fprintf(stderr,"libusb: claim interface %d failed: %d %s\n", interface, rc, libusb_strerror((enum libusb_error)rc));
 #if 0
         libusb_attach_kernel_driver(dev_handle, interface);
 #endif
@@ -115,7 +115,7 @@ libusb_device_handle *open_device(int vid, int pid, int config, int interface, i
     rc = libusb_set_interface_alt_setting(dev_handle, interface, alternate);
     if (rc < 0)
     {
-        fprintf(stderr,"libusb: set alternate interface %d.%d failed: %d %s\n", interface, alternate, rc, libusb_strerror((libusb_error)rc));
+        fprintf(stderr,"libusb: set alternate interface %d.%d failed: %d %s\n", interface, alternate, rc, libusb_strerror((enum libusb_error)rc));
         libusb_release_interface(dev_handle, interface);
         libusb_close(dev_handle);
         return NULL;
@@ -141,14 +141,14 @@ void close_device(libusb_device_handle *dev_handle, int interface)
     rc = libusb_release_interface(dev_handle, interface);
     if (rc < 0)
     {
-        fprintf(stderr,"libusb: release interface %d failed: %d %s\n", interface, rc, libusb_strerror((libusb_error)rc));
+        fprintf(stderr,"libusb: release interface %d failed: %d %s\n", interface, rc, libusb_strerror((enum libusb_error)rc));
     }
 
 #if 0
     if (was_attached)
         rc = libusb_attach_kernel_driver(dev_handle, interface);
         if (rc < 0)
-            fprintf(stderr,"libusb: attach kernel driver failed: %d %s\n", rc, libusb_strerror((libusb_error)rc));
+            fprintf(stderr,"libusb: attach kernel driver failed: %d %s\n", rc, libusb_strerror((enum libusb_error)rc));
 #endif
 
     libusb_close(dev_handle);
@@ -202,7 +202,7 @@ int control_transfer_out(libusb_device_handle *dev_handle, uint8_t bmRequestType
 
     if (len_xfer < 0)
     {
-        fprintf(stderr, "Failed transfer control data: %d/%d %s\n", len_xfer, len, libusb_strerror((libusb_error)len));
+        fprintf(stderr, "Failed transfer control data: %d/%d %s\n", len_xfer, len, libusb_strerror((enum libusb_error)len));
         return len_xfer;
     }
 
@@ -224,7 +224,7 @@ int control_transfer(libusb_device_handle *dev_handle, uint8_t bmRequestType, ui
     len = libusb_control_transfer(dev_handle, bmRequestType, bRequest, wValue, wIndex, reply_data, max_length, timeout);
     if (len < 0)
     {
-        fprintf(stderr, "Failed transfer control data: %d %s\n", len, libusb_strerror((libusb_error)len));
+        fprintf(stderr, "Failed transfer control data: %d %s\n", len, libusb_strerror((enum libusb_error)len));
         return len;
     }
 
@@ -268,7 +268,7 @@ int bulk_data_transfer(libusb_device_handle *dev_handle, uint8_t epaddr, uint8_t
     }
 
     if (rc != 0)
-        fprintf(stderr, "Error %d %s\n", rc, libusb_strerror((libusb_error)rc));
+        fprintf(stderr, "Error %d %s\n", rc, libusb_strerror((enum libusb_error)rc));
 
     *length = actual;
 
@@ -323,7 +323,7 @@ int clear_endpoint_stall(libusb_device_handle *dev_handle, uint8_t epaddr)
                 LIBUSB_REQUEST_CLEAR_FEATURE, 0 /* ENDPOINT_HALT wValue */, epaddr /* wIndex */, NULL /* reply_data */, 0, timeout);
     if (len < 0)
     {
-        fprintf(stderr, "Failed transfer control data: %d %s\n", len, libusb_strerror((libusb_error)len));
+        fprintf(stderr, "Failed transfer control data: %d %s\n", len, libusb_strerror((enum libusb_error)len));
         return len;
     }
 
@@ -360,7 +360,7 @@ void print_string_descriptor(libusb_device_handle *dev_handle, int index, const 
     int len = libusb_get_string_descriptor_ascii(dev_handle, (uint8_t) index, data, max_len);
     if (len < 0)
     {
-        fprintf(stderr,"libusb: get_string_descriptor %s %d failed: %d %s\n", (label ? label : "Descriptor"), index, len, libusb_strerror((libusb_error)len));
+        fprintf(stderr,"libusb: get_string_descriptor %s %d failed: %d %s\n", (label ? label : "Descriptor"), index, len, libusb_strerror((enum libusb_error)len));
         return;
     }
     // FIXME: NULL TERM ?
@@ -400,7 +400,7 @@ void list_matching_devices(int vid, int pid)
         int rc = libusb_get_device_descriptor(dev, &desc);
         if (rc < 0) 
         {
-            fprintf(stderr, "Failed to get device at index %d: %d %s\n", i, rc, libusb_strerror((libusb_error)rc));
+            fprintf(stderr, "Failed to get device at index %d: %d %s\n", i, rc, libusb_strerror((enum libusb_error)rc));
             continue;
         }
         

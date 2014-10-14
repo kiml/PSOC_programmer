@@ -19,6 +19,7 @@
     along with this Program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <stdint.h>
 #include <stdio.h>
 
 #define NULLSTR(s)       ((s) ? (s) : "<NULL>")
@@ -38,9 +39,12 @@
 #define MAX(a,b)        ((a) >= (b) ? (a) : (b))
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 int hex_to_bin(const char *hex, uint8_t *bin, int max_bin_len);
-void dump_data(FILE *fp, const uint8_t *data, int len, const char *msg=NULL);
+void dump_data(FILE *fp, const uint8_t *data, int len, const char *msg);
 bool match(const uint8_t *data, int data_len, const char *hex_data);
 
 void uint16_to_b2_BE(uint32_t data, uint8_t *b);
@@ -50,5 +54,9 @@ void uint32_to_b4_LE(uint32_t data, uint8_t *b);
 
 uint32_t b4_BE_to_uint32(const uint8_t *b);
 uint32_t b4_LE_to_uint32(const uint8_t *b);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
