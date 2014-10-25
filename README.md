@@ -3,14 +3,15 @@
 #####Summary
 Open source Unix tools to manipulate hex files and program a PSoC5 (ARM) via FX2 USB interface.
 
-#####Requirements
-* a Cypress CY8CKIT-050 dev kit, however some of the tools are of more general use.
-* Developed on OS X, however it is expected to run under Linux (not yet tested)
-
 #####Purpose
 * Tools to manipulate Intel hex files
 * Configure the FX2 USB interface on the CY8CKIT.
 * Program a hex file into a PSoC5 (ARM).
+
+
+#####Requirements
+* A Cypress CY8CKIT-050 dev kit, however some of the tools are of more general use.
+* Developed on OS X, however it is expected to run under Linux (not yet tested)
 
 #####See Also
 * https://github.com/kiml/PSOC_compiler.git
