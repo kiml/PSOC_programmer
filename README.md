@@ -8,18 +8,16 @@ Open source Unix tools to manipulate hex files and program a PSoC5 (ARM) via FX2
 * Developed on OS X, however it is expected to run under Linux (not yet tested)
 
 #####Purpose
-* Tools to manipulate "Intel" hex files
+* Tools to manipulate Intel hex files
 * Configure the FX2 USB interface on the CY8CKIT.
 * Program a hex file into a PSoC5 (ARM).
 
 #####See Also
 * https://github.com/kiml/PSOC_compiler.git
-
-* http://dfusion.com.au/wiki/
-    Eg ARM Embedded pages:
-        - PSoC5 bare metal
-        - PSoC5 programmer 
-        - GCC Linker
+* http://dfusion.com.au/wiki/  The ARM Embedded pages:
+    - PSoC5 bare metal
+    - PSoC5 programmer 
+    - GCC Linker
 
 #####Additional Uses
 * A useful general purpose Intel hex manipulation library (libhex)
