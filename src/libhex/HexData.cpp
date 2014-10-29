@@ -96,7 +96,9 @@ uint8_t Block::calculate_checksum(void) const
     }
 
     // 2's complement
-    sum = ~sum; sum += 1; 
+    sum = (~sum) + 1;
+    // Note: although ~ works since uint is unsigned and FF+1=00 (byte)
+    // it might be better to use: sum = ((sum ^ 0xFF) + 1) & 0xFF
     return sum;
 }
 

@@ -1,0 +1,150 @@
+Utility: gen_config(.py)
+
+Overview
+--------
+
+This utility is used to create configuration data (address and data) values
+to initialise microcontroller configuration registers.
+It creates a list of various data structures. Each structure is designed
+to optimise one common type of data initialisation requirement (eg constant
+fill, data copy etc). The data may be stored anywayre in FLASH but on PSOC
+is typically stored in the so called FLASH "configuration" area. A C function
+is supplied to walk the list, decode and action each entry.
+
+Source File Format
+------------------
+
+Grammer:
+  #include "filename.h"
+  #define NAME VALUE
+  #label NAME ADDRESS
+
+  addr : value * count                # Source type 1
+  addr : value                        # Source type 2
+  addr : hex bytes.... [ @ width ]    # Source type 3  NOTE: dest width not currently supported
+  addr : [src_addr] [* count]         # Source type 4  Default count 1
+
+  Future: ??
+    addr : [off:value]+               # Source type 5
+
+Labels:
+ * Labels are an additional construct. They are output unchanged in the
+   freehex output format. Their purpose is to add metadata to the output file (eg data load address)
+
+ * FIXME: True or not: only one label is currently permitted and it must occur before any "addr:" lines.
+ * FIXME: Should any coalescence be prevented from crossing label locations so that labels can be used to
+   create distinct config data sets (eg with diff load addresses) in a single file.
+
+ 
+Notes:
+ * addr, value, count may be expressed in standard C (well Python)
+      format, decimal, hex (0x...) etc.
+
+ * normal C include files can be used to pull in #define lines.
+   FIXME: This tool does not currently support #define macros or defines with expressions on RHS.
+
+ * A count == 0 in the source file is not valid.
+
+ * Source Types and Output types more or less match trivially.
+    Source Type   ->  Output Table Type (TT)
+     1                 1   CF     Constant Fill
+     2               ** 3 or 2. It depends. See below **
+     3                 3   DA     Data Array (single value is most compact)
+     4                 4   AC   Address Copy (memcpy)
+
+ * A single byte value could be INPUT using Source Types 1, 2 or 3
+ * For a single byte Source Type 3 syntactically reduces to Source Type 2.
+ * For a single byte all three source types (1,2,3) reduce to the same
+   internal format. Therefore single bytes will always be output in a
+   consistent format regardless of source construct.
+
+ * A single byte may be OUTPUT using Output Types 1 (CF), 2 (OV), 3(DA)
+   The most compact representation for a single byte happens to be DA.
+   Thus DA is the canonical format for outputting a single byte.
+
+   However a group of single byte values in a config file will often be
+   within a small address range. Therefore a run of single byte values
+   within an address range of 256 bytes can be efficiently coded using
+   output type 2 offset,value (OV).
+   Thus Output Type 2 (OV) is automatically generated as needed and
+   cannot be explicitly specified in the Source File unless Source Type 5
+   is implemented (to support entering small address offsets).
+
+Limits:
+ Constant Fill: count <= 65536 
+ Data Array:   <= 256 bytes
+ Address Copy: <= 256 bytes
+ Offset Value: address offset range <= 255  (count <=256 but offset <= 255)
+
+
+Output Modes
+------------
+ * there are two output modes - strictly in source order and optimised
+      (within a label group?). The optimisation mode groups multiple
+      single value type 2 items into a CFG_TT_OV structure where possible.
+
+ * It is possible to write an address twice. A realistic use case is to zero
+   a large block (CF) and then sparse write values into it later.
+   With output mode preserving source order it is up to the data file creator
+   to put the block fill before any sparse fill of individual values.
+ * Optimised mode gathers Source Type 2 entries together to compress storage space.
+   To permit bulk fills and sparse writes to the same space the general
+   rule is bulk fills first then sparse.
+   In practice the key rule is probably only:
+      In output file put CF (bulk fill) before others.
+      An additional refinement might be CF before AC before others too.
+
+   To ensure results are determinant between version the following order is
+   used when output is optimised (LHS output/executed first):
+
+      CF -> AC -> DA(multi) -> OV -> DA(single)
+
+  Note that DA multi is like AC so it comes before OV and DA single
+
+
+Output/Memory Data Structure
+----------------------------
+
+The top level entity is a list of data structures. The first byte of a
+structure contains the structure type, the list ends with an element
+type of CFG_TT_END. There are 4 types of initialisation structure: 
+Type: 1: constant fill, 2: data fill, 3:offset,value, 4: mem to mem copy
+
+Note: to permit count to handle common values of 256/65536 the stored count value has 1 added to it.
+Therefore a count of 0 is not possible.
+
+list structure:
+  [ HEADER ELEMENT ]* 0000
+  ->
+  [ ttcc aaaa aaaa ELEMENT ]* 0000
+      tt: type
+      cc: count_low - 1   # add 1 to get real count (ie stored 0 -> count=1, 1->2 etc)
+      a...a: 32 bit address
+      0000 is the list terminating value of ttcc
+
+
+ ELEMENT tt == 1:  constant fill (CF)
+   ccvv
+      cc: count_hi
+      vv: value
+
+ ELEMENT tt == 2:  offset value (OV)
+   [ oovv ]+
+      oo: offset
+      vv: value
+      "oovv" structure repeats cc (count_low) times
+
+ ELEMENT tt == 3:  data array (DA)
+   [ vv ]+
+      vv: value
+      "vv" structure repeats cc (count_low) times
+
+ ELEMENT tt == 4:  address copy (AC)
+   ssss ssss
+      s...s: 32 bit (source) address
+
+
+Note:
+ * For compactness addresses (eg 32 bit addresses) are NOT aligned on usual
+      memory boundaries. Note that ARMv7-M can handle unaligned 16/32 bit reads (not 64) IIRC,
+      Form ARMv6 and earlier can do byte reads and reconstruct any 16/32 bit values.
