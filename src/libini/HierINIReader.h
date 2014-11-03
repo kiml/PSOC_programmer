@@ -1,6 +1,7 @@
 #ifndef __HIERINIREADER_H__
 #define __HIERINIREADER_H__
 
+#include <stdint.h>
 #include "INIReader.h"
 
 class HierINIReader: public INIReader

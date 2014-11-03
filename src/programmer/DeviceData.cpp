@@ -16,6 +16,8 @@
     along with this Program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <stdio.h>
+
 #include "DeviceData.h"
 
 #include "HierINIReader.h"
