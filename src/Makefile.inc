@@ -17,7 +17,7 @@ COPY=cp
 
 all: $(TARGETS)
 
-install:
+install::
 ifdef PROGNAMES
 	@if [ x"$(INSTALL_DIR)" = x"" ] ; then \
 	echo INSTALL_DIR is not set; \
@@ -29,6 +29,18 @@ ifdef PROGNAMES
 	$(INSTALL) $(PROGNAMES) $(INSTALL_DIR); \
 	fi
 endif
+ifdef SCRIPTNAMES
+	@if [ x"$(INSTALL_DIR)" = x"" ] ; then \
+	echo INSTALL_DIR is not set; \
+	exit 1; \
+	else \
+	echo Install directory: $(INSTALL_DIR); \
+	echo Installing: $(SCRIPTNAMES); \
+	mkdir -p $(INSTALL_DIR); \
+	$(INSTALL) $(SCRIPTNAMES) $(INSTALL_DIR); \
+	fi
+endif
+
 
 
 clean::

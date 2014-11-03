@@ -1,4 +1,5 @@
 PROGNAMES=hex2bin mergehex hexinfo
+SCRIPTNAMES= freehex2other.py gen_config.py
 
 INC = -I ../libhex -I ../programmer
 LIBS = -L ../libhex -lhex

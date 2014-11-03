@@ -10,4 +10,4 @@ include ../Makefile.inc
 prog: $(OBJS)
 	$(CXX) $(OBJS) $(LIBS) -o $@
 
-install: prog
+install:: prog
