@@ -1,0 +1,10 @@
+make
+make install
+
+As configured 'make install' creates a local bin directory (at the top level dir) and this folder is assumed as the path used by PSOC_compiler demos.
+Note that make install only works from the top level folder.
+
+Other targets
+make clean
+
+some folder have test programs that can be built. They are not built by default.

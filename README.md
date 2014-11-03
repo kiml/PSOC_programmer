@@ -51,10 +51,10 @@ Short version - the mountain was there so I climbed it :-)
 ```
 
 `hex2bin infile.hex outfile.bin`
-  converts intel hex files into binary files (note binary files may be quite large)
+  Converts intel hex files into binary files (note binary files may be quite large)
 
 `hexinfo filename.hex`
-  dumps PSoC specific hex file into something slighly more readable.
+  Dumps PSoC specific hex file into something slighly more readable.
 
 ```
    mergehex (-[cdemnp] infile.hex)+ [-o outfile.hex]
@@ -65,3 +65,22 @@ Short version - the mountain was there so I climbed it :-)
   configuration info to create a programmable hex file.
   This is an interim tool - ideally the additional configuration info comes
   from human readable config files rather than .hex snippets.
+
+`freehex2other[.py] [-h] -f OUTPUT_FORMAT [-i INFILE] [-o OUTFILE]`
+  Convert ASCII hex bytes to other formats
+
+  optional arguments:
+  -h, --help        show this help message and exit
+  -f OUTPUT_FORMAT  output format: hex,intelhex,binary
+  -i INFILE         input file. Default stdin
+  -o OUTFILE        output file. Default stdout
+
+
+`gen_config[.py] [-h] -f OUTPUT_FORMAT [-i INFILE] [-o OUTFILE]`
+  Compile config data into freehex file format
+
+  optional arguments:
+  -h, --help  show this help message and exit
+  -i INFILE   input file
+  -o OUTFILE  output file. Default stdout
+

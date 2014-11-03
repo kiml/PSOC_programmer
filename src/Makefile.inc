@@ -19,12 +19,13 @@ all: $(TARGETS)
 
 install:
 ifdef PROGNAMES
-	@if [ "$(INSTALL_DIR)" == "" ] ; then \
+	@if [ x"$(INSTALL_DIR)" = x"" ] ; then \
 	echo INSTALL_DIR is not set; \
 	exit 1; \
 	else \
 	echo Install directory: $(INSTALL_DIR); \
 	echo Installing: $(PROGNAMES); \
+	mkdir -p $(INSTALL_DIR); \
 	$(INSTALL) $(PROGNAMES) $(INSTALL_DIR); \
 	fi
 endif
